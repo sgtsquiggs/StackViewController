@@ -24,7 +24,12 @@ open class SeparatorView: UIView {
     
     /// The inset of the separator from the left (MinX) edge for a horizontal
     /// separator and from the bottom (MaxY) edge for a vertical separator.
+    @available(*, deprecated)
     open var separatorInset: CGFloat = 15.0 {
+        didSet { self.separatorInsets = UIEdgeInsets(top: 0, left: separatorInset, bottom: separatorInset, right: 0) }
+    }
+
+    open var separatorInsets: UIEdgeInsets = UIEdgeInsetsMake(0, 15.0, 15.0, 0) {
         didSet { setNeedsDisplay() }
     }
     
@@ -77,13 +82,13 @@ open class SeparatorView: UIView {
     
     open override func draw(_ rect: CGRect) {
         guard separatorThickness > 0 else { return }
-        let edge: CGRectEdge = {
+        let insets: UIEdgeInsets = {
             switch axis {
-            case .horizontal: return .minXEdge
-            case .vertical: return .maxYEdge
+            case .horizontal: return UIEdgeInsets(top: 0, left: separatorInsets.left, bottom: 0, right: separatorInsets.right)
+            case .vertical: return UIEdgeInsets(top: separatorInsets.top, left: 0, bottom: separatorInsets.bottom, right: 0)
             }
         }()
-        let (_, separatorRect) = bounds.divided(atDistance: separatorInset, from: edge)
+        let separatorRect = UIEdgeInsetsInsetRect(bounds, insets)
         separatorColor.setFill()
         UIRectFill(separatorRect)
     }
